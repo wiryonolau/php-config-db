@@ -1,0 +1,6 @@
+.composer
+auth.json
+*.swp
+*.tmp
+*.bak
+nbproject

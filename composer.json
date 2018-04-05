@@ -1,0 +1,29 @@
+{
+    "name": "wiryono.lau/php-config-db",
+    "description": "Configuration Databasse",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "zf3",
+        "zend framework 3"
+    ],
+    "homepage": "https://github.com/wiryonolau/php-config-db",
+    "authors": [
+        {
+            "name": "Wiryono Lau",
+            "email": "wiryonolau@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^5.6",
+        "zfcampus/zf-console": "^1.4",
+        "zendframework/zend-mvc": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ConfigDB\\": "module/ConfigDB/src/"
+        }
+    }
+}
