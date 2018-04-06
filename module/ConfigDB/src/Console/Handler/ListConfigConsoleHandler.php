@@ -12,7 +12,10 @@ class ListConfigConsoleHandler {
     }
 
     public function __invoke($route, $console) {
-        print_r($this->adapter->toArray());
+        $schemadir = $route->getMatchedParam("schemadir", "");
+
+        $entries = $this->adapter->toArray($schemadir);
+        print_r($entries);
     }
 
 }

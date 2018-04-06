@@ -4,6 +4,7 @@ namespace ConfigDB\Adapter;
 
 use ConfigDB\Adapter\ConfigAdapterInterface;
 use ConfigDB\Model\EntryModel;
+use ConfigDB\Model\EntriesModel;
 
 class FileConfigAdapter implements ConfigAdapterInterface {
 
@@ -16,12 +17,14 @@ class FileConfigAdapter implements ConfigAdapterInterface {
     }
 
     public function get($schemadir, $key, $userspace = "") {
+
         $userspace = ($userspace ? $userspace : $this->default_userspace);
 
         $file = implode(DIRECTORY_SEPARATOR,
                 [$this->constructPath($schemadir, $userspace), self::CONFIG_FILE]);
 
         if (file_exists($file)) {
+
             $content = json_decode(file_get_contents($file), true);
             $index = array_search($key, array_column($content, "name"));
 
@@ -96,16 +99,18 @@ class FileConfigAdapter implements ConfigAdapterInterface {
             } elseif ($child->isFile() === true and $child->getFilename() === self::CONFIG_FILE) {
                 $content = file_get_contents($child->getPath() . DIRECTORY_SEPARATOR . $child->getBasename());
                 $entries = json_decode($content, true);
-
+                
+                $entriesModel = new EntriesModel();
                 foreach ($entries as $entry) {
                     try {
                         $entry = new EntryModel($entry["name"], $entry["value"],
                                 $entry["type"]);
-                        $result[] = $entry;
+                        $entriesModel->addEntry($entry);
                     } catch (\Exception $e) {
                         continue;
                     }
                 }
+                $result["__entries"] = $entriesModel;
             } else {
                 $result[] = $name;
             }

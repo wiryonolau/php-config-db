@@ -29,9 +29,9 @@ class SetConfigConsoleHandler {
         $success = $this->adapter->set($schemadir, $key, $value, $value_type, $userspace);
 
         if ($success) {
-            $value = $this->adapter->get($schemadir, $key, $userspace);
-            $console->writeLine(sprintf("schema:%s.%s key:%s set as %s",
-                            $userspace, $schemadir, $key, $value->getValue(true)));
+            $entry = $this->adapter->get($schemadir, $key, $userspace);
+            $console->writeLine(sprintf("schema:%s.%s\tkey:%s\tset as (%s)%s",
+                            $userspace, $schemadir, $key, $entry->type, $entry->getValue(true)));
         } else {
             $console->writeLine("Write config failed");
         }
