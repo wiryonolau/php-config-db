@@ -4,16 +4,16 @@ namespace ConfigDB\Adapter\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use ConfigDB\Adapter\FileDatabaseAdapter;
+use ConfigDB\Adapter\FileConfigAdapter;
 
-class FileDatabaseAdapterFactory implements FactoryInterface {
+class FileConfigAdapterFactory implements FactoryInterface {
 
     public function __invoke(ContainerInterface $container, $requestedName,
             array $options = null) {
 
         $default_userspace = $container->get("config")["configdb"]["default_userspace"];
 
-        return new FileDatabaseAdapter($default_userspace);
+        return new FileConfigAdapter($default_userspace);
     }
 
 }

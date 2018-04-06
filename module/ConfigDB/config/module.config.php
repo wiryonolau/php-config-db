@@ -10,7 +10,7 @@ return array(
             Console\Handler\GetConfigConsoleHandler::class => InvokableFactory::class,
             Console\Handler\SetConfigConsoleHandler::class => Console\Handler\Factory\SetConfigConsoleHandlerFactory::class,
             Console\Handler\ListConfigConsoleHandler::class => Console\Handler\Factory\ListConfigConsoleHandlerFactory::class,
-            Adapter\FileDatabaseAdapter::class => Adapter\Factory\FileDatabaseAdapterFactory::class
+            Adapter\FileConfigAdapter::class => Adapter\Factory\FileConfigAdapterFactory::class
         ),
     ),
     'console' => array(

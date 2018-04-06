@@ -2,10 +2,10 @@
 
 namespace ConfigDB\Adapter;
 
-use ConfigDB\Adapter\ConfigDatabaseAdapterInterface;
+use ConfigDB\Adapter\ConfigAdapterInterface;
 use ConfigDB\Model\EntryModel;
 
-class FileDatabaseAdapter implements ConfigDatabaseAdapterInterface {
+class FileConfigAdapter implements ConfigAdapterInterface {
 
     const CONFIG_FILE = "entry.json";
 
@@ -25,18 +25,17 @@ class FileDatabaseAdapter implements ConfigDatabaseAdapterInterface {
             $content = json_decode(file_get_contents($file), true);
             $index = array_search($key, array_column($content, "name"));
 
-            $entry = new EntryModel($content[$index]["name"], $content[$index]["value"], $content[$index]["type"]);
+            $entry = new EntryModel($content[$index]["name"],
+                    $content[$index]["value"], $content[$index]["type"]);
 
-            if ($entry->type == EntryModel::TYPE_LIST) {
-                return json_encode($entry->value, true);
-            }
-            return (string) $entry->value;
+            return $entry;
         }
-        return false;
+
+        throw new \Exception("Entry not exist");
     }
 
-    public function set($schemadir, $key, $value, $value_type = EntryModel::TYPE_STRING,
-            $userspace = "") {
+    public function set($schemadir, $key, $value,
+            $value_type = EntryModel::TYPE_STRING, $userspace = "") {
 
         $userspace = ($userspace ? $userspace : $this->default_userspace);
 
@@ -57,8 +56,8 @@ class FileDatabaseAdapter implements ConfigDatabaseAdapterInterface {
                 $content = json_decode(file_get_contents($entry), true);
                 $index = array_search($key, array_column($content, "name"));
 
-                if($index !== false) {
-                    $content[$index] = $value_arr;  
+                if ($index !== false) {
+                    $content[$index] = $value_arr;
                 } else {
                     $content[] = $value_arr;
                 }
@@ -72,7 +71,7 @@ class FileDatabaseAdapter implements ConfigDatabaseAdapterInterface {
         return false;
     }
 
-    public function listKeys($schemadir = "", $userspace="") {
+    public function listKeys($schemadir = "", $userspace = "") {
         
     }
 
@@ -95,13 +94,14 @@ class FileDatabaseAdapter implements ConfigDatabaseAdapterInterface {
                 $subit = new \DirectoryIterator($child->getPathname());
                 $result[$name] = $this->directoryIteratorToArray($subit);
             } elseif ($child->isFile() === true and $child->getFilename() === self::CONFIG_FILE) {
-                $content = file_get_contents($child->getPath().DIRECTORY_SEPARATOR.$child->getBasename());
+                $content = file_get_contents($child->getPath() . DIRECTORY_SEPARATOR . $child->getBasename());
                 $entries = json_decode($content, true);
 
                 foreach ($entries as $entry) {
                     try {
-                        $entry = new EntryModel($entry["name"], $entry["value"], $entry["type"]);
-                        $result[] = $entry->toArray();
+                        $entry = new EntryModel($entry["name"], $entry["value"],
+                                $entry["type"]);
+                        $result[] = $entry;
                     } catch (\Exception $e) {
                         continue;
                     }

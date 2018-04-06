@@ -3,7 +3,7 @@
 namespace ConfigDB\Model;
 
 class EntryModel {
-    
+
     const TYPE_BOOL = "bool";
     const TYPE_BOOLEAN = "boolean";
     const TYPE_STRING = "string";
@@ -13,7 +13,7 @@ class EntryModel {
     protected $type;
     protected $value;
 
-    public function __construct($name, $value, $value_type=self::TYPE_STRING) {
+    public function __construct($name, $value, $value_type = self::TYPE_STRING) {
         $this->setName($name);
         $this->setValue($value, $value_type);
     }
@@ -35,17 +35,34 @@ class EntryModel {
             throw new \Exception("Parameters not exist");
         }
 
-        return $this->{$key};
+        switch ($key) {
+            case "value":
+                return $this->getValue();
+            default:
+                return $this->{$key};
+        }
+    }
 
+    public function getValue($value_as_string = false) {
+        if (!$value_as_string) {
+            return $this->value;
+        }
+
+        if (is_array($this->value)) {
+            $value = json_encode($this->value);
+        } else {
+            $value = (string) $this->value;
+        }
+
+        return $value;
     }
 
     public function setName($name) {
         if (!preg_match('/^[a-z0-9_.]+$/', $name)) {
             throw new \Exception("Invalid config name format given");
         }
-        
-        $this->name = $name;
 
+        $this->name = $name;
     }
 
     public function setValue($value, $value_type = self::TYPE_STRING) {
@@ -75,7 +92,7 @@ class EntryModel {
                 }
                 break;
             case self::TYPE_STRING:
-                $value = (string) $value;  
+                $value = (string) $value;
                 break;
             default:
                 throw new \Exception("Invalid value type given");
@@ -86,7 +103,7 @@ class EntryModel {
     }
 
     public function isValid() {
-        if ($this->name and !is_null($this->value)) {
+        if ($this->name and ! is_null($this->value)) {
             return true;
         }
         return false;

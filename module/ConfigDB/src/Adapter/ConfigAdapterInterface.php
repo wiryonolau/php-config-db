@@ -4,7 +4,7 @@ namespace ConfigDB\Adapter;
 
 use ConfigDB\Model\EntryModel;
 
-interface ConfigDatabaseAdapterInterface {
+interface ConfigAdapterInterface {
 
     public function set($schemadir, $key, $value, $value_type = EntryModel::TYPE_STRING,
             $userspace = "");

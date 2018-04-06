@@ -2,14 +2,15 @@
 
 namespace ConfigDB\Console\Handler;
 
-use ConfigDB\Adapter\ConfigDatabaseAdapterInterface;
+use ConfigDB\Adapter\ConfigAdapterInterface;
 use ZF\Console\Route;
+use ConfigDB\Model\EntryModel;
 
 class SetConfigConsoleHandler {
 
     protected $adapter;
 
-    public function __construct(ConfigDatabaseAdapterInterface $adapter) {
+    public function __construct(ConfigAdapterInterface $adapter) {
         $this->adapter = $adapter;
     }
 
@@ -24,14 +25,13 @@ class SetConfigConsoleHandler {
             $console->writeLine("Invalid format");
             return 1;
         }
-
         
         $success = $this->adapter->set($schemadir, $key, $value, $value_type, $userspace);
 
         if ($success) {
             $value = $this->adapter->get($schemadir, $key, $userspace);
             $console->writeLine(sprintf("schema:%s.%s key:%s set as %s",
-                            $userspace, $schemadir, $key, $value));
+                            $userspace, $schemadir, $key, $value->getValue(true)));
         } else {
             $console->writeLine("Write config failed");
         }
