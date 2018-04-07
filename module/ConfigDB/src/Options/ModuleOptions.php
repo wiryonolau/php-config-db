@@ -5,6 +5,7 @@ namespace ConfigDB\Options;
 use Interop\Container\ContainerInterface;
 use Zend\Stdlib\AbstractOptions;
 use Zend\Db\Adapter\Adapter as ZendDbAdapter;
+use Zend\Db\Adapter\AdapterInterface as ZendDbAdapterInterface;
 use Zend\Cache\StorageFactory;
 use Zend\Cache\Storage\StorageInterface;
 
@@ -31,7 +32,7 @@ class ModuleOptions extends AbstractOptions {
             $adapter = new ZendDbAdapter($adapter);
         }
 
-        if (!$adapter instanceof ZendDbAdapter) {
+        if (!$adapter instanceof ZendDbAdapterInterface) {
             throw new \Exception("No adapter set");
         }
 
