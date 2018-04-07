@@ -9,10 +9,9 @@ class SetConfigConsoleHandlerFactory implements \Zend\ServiceManager\Factory\Fac
     public function __invoke(\Interop\Container\ContainerInterface $container,
             $requestedName, array $options = null) {
 
-        $adapter = $container->get("config")["configdb"]["database_adapter"];
-        $adapter = $container->get($adapter);
-        
-        return new SetConfigConsoleHandler($adapter);
+        $configDbService = $container->get(\ConfigDB\Service\ConfigDbService::class);
+
+        return new SetConfigConsoleHandler($configDbService);
     }
 
 }

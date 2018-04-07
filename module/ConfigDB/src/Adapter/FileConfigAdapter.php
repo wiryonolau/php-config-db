@@ -74,10 +74,6 @@ class FileConfigAdapter implements ConfigAdapterInterface {
         return false;
     }
 
-    public function listKeys($schemadir = "", $userspace = "") {
-        
-    }
-
     public function toArray($schemadir = "", $userspace = "") {
         $userspace = ($userspace ? $userspace : $this->default_userspace);
 

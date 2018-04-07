@@ -1,14 +1,15 @@
 <?php
 
 namespace ConfigDB\Console\Handler;
-use ConfigDB\Adapter\ConfigAdapterInterface;
+
+use ConfigDB\Service\ConfigDbService;
 
 class GetConfigConsoleHandler {
 
-    protected $adapter;
+    protected $configDbService;
 
-    public function __construct(ConfigAdapterInterface $adapter) {
-        $this->adapter = $adapter;
+    public function __construct(ConfigDbService $configDbService) {
+        $this->configDbService = $configDbService;
     }
 
     public function __invoke($route, $console) {
@@ -18,7 +19,7 @@ class GetConfigConsoleHandler {
         $key = $route->getMatchedParam("key", false);
  
         if ($schemadir and $key) {
-            $entry = $this->adapter->get($schemadir, $key, $userspace);
+            $entry = $this->configDbService->getConfig($schemadir, $key, $userspace);
             $console->writeLine(sprintf("schema:%s.%s\tkey:%s\tvalue:(%s)%s",
                             $userspace, $schemadir, $key, $entry->type, $entry->getValue(true)));
             return 0;

@@ -20,6 +20,7 @@ class EntryModel {
 
     public function __set($key, $value) {
         switch ($key) {
+            case "key":
             case "name":
                 $this->setName($value);
                 break;
@@ -32,7 +33,8 @@ class EntryModel {
 
     public function __get($key) {
         if (!in_array($key, ["name", "type", "value"])) {
-            throw new \Exception("Parameters not exist");
+            throw new \Exception(sprintf("%s : %s", get_class($this),
+                    "Parameters not exist"));
         }
 
         switch ($key) {
@@ -58,8 +60,13 @@ class EntryModel {
     }
 
     public function setName($name) {
+        if (!$name) {
+            throw new \Exception("Entry name empty");
+        }
+
         if (!preg_match('/^[a-z0-9_.]+$/', $name)) {
-            throw new \Exception("Invalid config name format given");
+            throw new \Exception(sprintf("%s : %s", get_class($this),
+                    "Invalid config name format given"));
         }
 
         $this->name = $name;
@@ -95,7 +102,8 @@ class EntryModel {
                 $value = (string) $value;
                 break;
             default:
-                throw new \Exception("Invalid value type given");
+                throw new \Exception(sprintf("%s : %s", get_class($this),
+                        "Invalid value type given"));
         }
 
         $this->type = $value_type;
@@ -111,7 +119,8 @@ class EntryModel {
 
     public function toArray() {
         if (!$this->isValid()) {
-            throw new \Exception("Invalid entry");
+            throw new \Exception(sprintf("%s : %s", get_class($this),
+                    "Invalid entry"));
         }
 
         return [

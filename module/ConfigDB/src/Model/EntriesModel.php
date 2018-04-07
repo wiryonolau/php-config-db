@@ -5,10 +5,9 @@ namespace ConfigDB\Model;
 use ConfigDB\Model\EntryModel;
 
 class EntriesModel extends \ArrayObject {
-    public function __construct() {
-        return false;
-    }
 
+    const ENTRIES_KEY = "__entries";
+    
     public function addEntry(EntryModel $entry) {
         $this->offsetSet($entry->name, $entry);
     }

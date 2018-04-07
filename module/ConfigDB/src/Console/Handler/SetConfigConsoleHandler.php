@@ -2,16 +2,16 @@
 
 namespace ConfigDB\Console\Handler;
 
-use ConfigDB\Adapter\ConfigAdapterInterface;
+use ConfigDB\Service\ConfigDbService;
 use ZF\Console\Route;
 use ConfigDB\Model\EntryModel;
 
 class SetConfigConsoleHandler {
 
-    protected $adapter;
+    protected $configDbService;
 
-    public function __construct(ConfigAdapterInterface $adapter) {
-        $this->adapter = $adapter;
+    public function __construct(ConfigDbService $configDbService) {
+        $this->configDbService = $configDbService;
     }
 
     public function __invoke(Route $route, $console) {
@@ -26,10 +26,10 @@ class SetConfigConsoleHandler {
             return 1;
         }
         
-        $success = $this->adapter->set($schemadir, $key, $value, $value_type, $userspace);
+        $success = $this->configDbService->setConfig($schemadir, $key, $value, $value_type, $userspace);
 
         if ($success) {
-            $entry = $this->adapter->get($schemadir, $key, $userspace);
+            $entry = $this->configDbService->getConfig($schemadir, $key, $userspace);
             $console->writeLine(sprintf("schema:%s.%s\tkey:%s\tset as (%s)%s",
                             $userspace, $schemadir, $key, $entry->type, $entry->getValue(true)));
         } else {
