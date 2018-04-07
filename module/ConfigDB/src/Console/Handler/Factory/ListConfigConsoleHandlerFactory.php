@@ -9,10 +9,10 @@ class ListConfigConsoleHandlerFactory implements \Zend\ServiceManager\Factory\Fa
     public function __invoke(\Interop\Container\ContainerInterface $container,
             $requestedName, array $options = null) {
 
-        $adapter = $container->get("config")["configdb"]["database_adapter"];
-        $adapter = $container->get($adapter);
-        
-        return new ListConfigConsoleHandler($adapter);
+
+        $configDbService = $container->get(\ConfigDB\Service\ConfigDbService::class);
+
+        return new ListConfigConsoleHandler($configDbService);
     }
 
 }
