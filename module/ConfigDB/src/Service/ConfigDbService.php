@@ -9,25 +9,38 @@ use ConfigDB\Model\EntriesModel;
 
 class ConfigDbService {
 
-    const CONFIG_KEY = "config";
-
     protected $cache;
     protected $adapter;
-    protected $config;
+    protected $default_userspace;
 
     public function __construct(ConfigAdapterInterface $adapter,
-            StorageInterface $cache = null) {
+            $default_userspace, StorageInterface $cache = null) {
+
         $this->cache = $cache;
         $this->adapter = $adapter;
-        
-        $this->buildCache();
+        $this->default_userspace = $userspace;
     }
 
     public function getConfig($schemadir, $key = "", $userspace = "") {
-        
+
+        $userspace = ($userspace ? $userspace : $this->default_userspace);
+
+        if ($this->cache instanceof StorageInterface) {
+            $config = $this->cache->getItem($userspace);
+
+            if (empty($config)) {
+                $this->cache->setItem($userspace,
+                        $this->adapter->toArray("", $namespace));
+            } else {
+                $config = $this->cache->getItem($userspace);
+            }
+        } else {
+            $config = $this->adapter->toArray("", $namespace);
+        }
+
         $schema = explode(".", $schemadir);
-        
-        $value = &$this->config;
+
+        $value = &$config;
 
         foreach ($schema as $path) {
             if (empty($value[$path])) {
@@ -47,27 +60,19 @@ class ConfigDbService {
     public function setConfig($schemadir, $key, $value,
             $value_type = EntryModel::TYPE_STRING, $userspace = "") {
 
+        $userspace = ($userspace ? $userspace : $this->default_userspace);
+
         $success = $this->adapter->set($schemadir, $key, $value, $value_type,
                 $userspace);
 
         if ($success) {
-            $this->buildCache();
+            if ($this->cache instanceof StorageInterface) {
+                $this->cache->setItem($userspace,
+                        $this->adapter->toArray("", $userspace));
+            }
         }
 
         return $success;
     }
 
-    private function buildCache() {
-        $config = $this->adapter->toArray();
-
-        if ($this->cache instanceof StorageInterface) {
-            $this->cache->setItem(self::CONFIG_KEY, $config);
-            $this->config = $this->cache->getItem(self::CONFIG_KEY);
-        } else {
-            $this->config = $config;
-        }
-        
-    }
-
 }
- 

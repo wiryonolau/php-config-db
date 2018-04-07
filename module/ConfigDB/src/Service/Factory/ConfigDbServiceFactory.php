@@ -12,6 +12,7 @@ class ConfigDbServiceFactory implements \Zend\ServiceManager\Factory\FactoryInte
         $moduleOptions = $container->get(\ConfigDB\Options\ModuleOptions::class);
 
         return new ConfigDbService($moduleOptions->getConfigAdapter($container),
+                $moduleOptions->getDefaultUserspace(),
                 $moduleOptions->getCacheAdapter());
     }
 
