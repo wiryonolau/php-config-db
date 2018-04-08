@@ -10,6 +10,7 @@ return array(
             Console\Handler\GetConfigConsoleHandler::class => Console\Handler\Factory\GetConfigConsoleHandlerFactory::class,
             Console\Handler\SetConfigConsoleHandler::class => Console\Handler\Factory\SetConfigConsoleHandlerFactory::class,
             Console\Handler\ListConfigConsoleHandler::class => Console\Handler\Factory\ListConfigConsoleHandlerFactory::class,
+            Console\Handler\ListKeyConsoleHandler::class => Console\Handler\Factory\ListKeyConsoleHandlerFactory::class,
             Console\Handler\InitDatabaseConsoleHandler::class => Console\Handler\Factory\InitDatabaseConsoleHandlerFactory::class,
             Options\ModuleOptions::class => Options\Factory\ModuleOptionsFactory::class,
             Adapter\FileConfigAdapter::class => Adapter\Factory\FileConfigAdapterFactory::class,
@@ -26,27 +27,24 @@ return array(
                     'route' => '[--userspace=] <schemadir> <key>',
                     'short_description' => 'Get Config',
                     'handler' => Console\Handler\GetConfigConsoleHandler::class,
-                    'defaults' => array(
-                        'userspace' => 'global'
-                    )
                 ),
                 array(
                     'name' => 'set',
                     'route' => '[--userspace=] [--valuetype=] <schemadir> <key> <value>',
                     'short_description' => 'Set Config',
                     'handler' => Console\Handler\SetConfigConsoleHandler::class,
-                    'defaults' => array(
-                        'userspace' => 'global'
-                    )
                 ),
                 array(
                     'name' => 'list',
                     'route' => '[--userspace=] <schemadir>',
                     'short_description' => 'List Config',
                     'handler' => Console\Handler\ListConfigConsoleHandler::class,
-                    'defaults' => array(
-                        'userspace' => 'global'
-                    )
+                ),
+                array(
+                    'name' => 'list-key',
+                    'route' => '[--userspace=] [<schemadir>]',
+                    'short_description' => 'List Config Key',
+                    'handler' => Console\Handler\ListKeyConsoleHandler::class,
                 ),
                 array(
                     'name' => 'initdb',
