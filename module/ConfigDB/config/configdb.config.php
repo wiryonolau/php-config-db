@@ -9,8 +9,7 @@ return [
          * ConfigDB\Adapter\FileConfigAdapter - File base config
          * ConfigDB\Adapter\DatabaseConfigAdapter - Database config
          */
-        #"config_adapter" => Adapter\FileConfigAdapter::class,
-        "config_adapter" => Adapter\DatabaseConfigAdapter::class,
+        "config_adapter" => Adapter\FileConfigAdapter::class,
         /*
          * Database Adapter if use ConfigDb\Adapter\DatabaseAdapter
          * Instance of Zend\Db\Adapter\Adapter

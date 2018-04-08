@@ -18,36 +18,29 @@ class ConfigDbService {
 
         $this->cache = $cache;
         $this->adapter = $adapter;
-        $this->default_userspace = $userspace;
+        $this->default_userspace = $default_userspace;
+    }
+
+    public function listKey($schemadir = "", $userspace = "") {
+        $userspace = ($userspace ? $userspace : $this->default_userspace);
+
+        $config = $this->getCache($userspace);
+
+        $value = $this->findSchema($schemadir, $config);
+
+        return $this->findKey($value);
     }
 
     public function getConfig($schemadir, $key = "", $userspace = "") {
 
         $userspace = ($userspace ? $userspace : $this->default_userspace);
 
-        if ($this->cache instanceof StorageInterface) {
-            $config = $this->cache->getItem($userspace);
+        $config = $this->getCache($userspace);
 
-            if (empty($config)) {
-                $this->cache->setItem($userspace,
-                        $this->adapter->toArray("", $namespace));
-            } else {
-                $config = $this->cache->getItem($userspace);
-            }
-        } else {
-            $config = $this->adapter->toArray("", $namespace);
-        }
+        $value = $this->findSchema($schemadir, $config);
 
-        $schema = explode(".", $schemadir);
-
-        $value = &$config;
-
-        foreach ($schema as $path) {
-            if (empty($value[$path])) {
-                throw new \Exception("Schema not exist");
-            }
-
-            $value = $value[$path];
+        if (!isset($value[EntriesModel::ENTRIES_KEY])) {
+            throw new \Exception("Schema doesn't have entry");
         }
 
         if ($key) {
@@ -73,6 +66,67 @@ class ConfigDbService {
         }
 
         return $success;
+    }
+
+    private function findKey(& $someArray) {
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($someArray),
+                \RecursiveIteratorIterator::SELF_FIRST);
+
+        $keys = [];
+
+        foreach ($iterator as $k => $v) {
+            //$indent = str_repeat(' ;', 10 * $iterator->getDepth());
+            // Not at end: show key only
+            if ($k == "__entries") {
+                for ($p = array(), $i = 0, $z = $iterator->getDepth() - 1; $i <= $z; $i++) {
+                    $p[] = $iterator->getSubIterator($i)->key();
+                }
+                $path = implode('.', $p);
+
+                foreach (array_keys($v->getArrayCopy()) as $entry) {
+                    if ($path) {
+                        $keys[] = sprintf("%s:%s", $path, $entry);
+                    } else {
+                        $keys[] = $entry;
+                    }
+                }
+            }
+        }
+
+        return $keys;
+    }
+
+    private function findSchema($schemadir, &$value) {
+        if (!empty($schemadir)) {
+            $schema = explode(".", $schemadir);
+
+            foreach ($schema as $path) {
+                if (empty($value[$path])) {
+                    throw new \Exception("Schema not exist");
+                }
+
+                $value = $value[$path];
+            }
+        }
+
+        return $value;
+    }
+
+    private function getCache($userspace) {
+        if ($this->cache instanceof StorageInterface) {
+            $config = $this->cache->getItem($userspace);
+
+            if (empty($config)) {
+                $this->cache->setItem($userspace,
+                        $this->adapter->toArray("", $userspace));
+
+                $config = $this->cache->getItem($userspace);
+            }
+        } else {
+            $config = $this->adapter->toArray("", $userspace);
+        }
+
+        return $config;
     }
 
 }
